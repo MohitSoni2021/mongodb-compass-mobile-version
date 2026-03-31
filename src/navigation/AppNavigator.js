@@ -15,9 +15,14 @@ export default function AppNavigator() {
       <Stack.Navigator 
         initialRouteName="Connect"
         screenOptions={{
-          headerStyle: { backgroundColor: '#020617' }, // slate-950
-          headerTintColor: '#fff',
-          headerTitleStyle: { fontWeight: '900', fontSize: 20 },
+          headerStyle: { backgroundColor: '#F8FBFA' },
+          headerTintColor: '#00796B',
+          headerTitleStyle: { 
+            fontWeight: '900', 
+            fontSize: 18,
+            color: '#004D40',
+            fontFamily: 'InclusiveSans_400Regular'
+          },
           headerShadowVisible: false,
         }}
       >
