@@ -181,27 +181,44 @@ export default function DocumentListScreen() {
 
     const renderTableView = () => (
         <ScrollView horizontal className="mb-4">
-            <VStack space="xs">
-                <HStack className="bg-[#004D40] rounded-t-2xl p-4 min-w-[500px]">
+            <VStack className="border border-slate-100 rounded-3xl overflow-hidden shadow-sm">
+                {/* Header Row */}
+                <HStack className="bg-[#00473E] p-4 min-w-[750px]">
                     {tableHeaders.map((header, idx) => (
-                        <Box key={idx} className="flex-1 px-2">
-                            <Text className="text-white font-black text-[10px] uppercase tracking-widest font-['InclusiveSans']">{header}</Text>
+                        <Box 
+                            key={idx} 
+                            className={`flex-1 px-4 border-r border-[#00695C]/30 ${idx === tableHeaders.length - 1 ? 'border-r-0' : ''}`}
+                        >
+                            <Text className="text-white font-black text-[10px] uppercase tracking-[0.1em] font-['InclusiveSans'] text-left">{header}</Text>
                         </Box>
                     ))}
-                    <Box className="w-12" />
+                    <Box className="w-16" />
                 </HStack>
+                {/* Data Rows */}
                 {docs.map((doc, dIdx) => (
-                    <TouchableOpacity key={dIdx} onPress={() => handleEdit(doc)}>
-                        <Card className={`bg-white rounded-none border-b border-slate-100 p-4 min-w-[500px] flex-row ${dIdx === docs.length - 1 ? 'rounded-b-2xl border-b-0' : ''}`}>
+                    <TouchableOpacity 
+                        key={dIdx} 
+                        onPress={() => handleEdit(doc)}
+                        activeOpacity={0.7}
+                    >
+                        <Card className={`bg-white rounded-none border-b border-slate-100 p-4 min-w-[750px] flex-row active:bg-teal-50/50 ${dIdx === docs.length - 1 ? 'border-b-0' : ''}`}>
                             {tableHeaders.map((header, hIdx) => (
-                                <Box key={hIdx} className="flex-1 px-2">
-                                    <Text className="text-[#004D40] text-xs font-['InclusiveSans']" numberOfLines={1}>
+                                <Box 
+                                    key={hIdx} 
+                                    className={`flex-1 px-4 border-r border-slate-50 ${hIdx === tableHeaders.length - 1 ? 'border-r-0' : ''}`}
+                                >
+                                    <Text className="text-[#004D40] text-xs font-['InclusiveSans'] text-left" numberOfLines={1}>
                                         {typeof doc[header] === 'object' ? '{...}' : String(doc[header] || '-')}
                                     </Text>
                                 </Box>
                             ))}
-                            <TouchableOpacity className="w-12 items-center justify-center" onPress={() => handleDelete(doc)}>
-                                <Trash2 size={14} color="#F43F5E" />
+                            <TouchableOpacity 
+                                className="w-16 items-center justify-center border-l border-slate-50" 
+                                onPress={() => handleDelete(doc)}
+                            >
+                                <Box className="bg-[#FFF1F2] p-1.5 rounded-full">
+                                    <Trash2 size={13} color="#F43F5E" />
+                                </Box>
                             </TouchableOpacity>
                         </Card>
                     </TouchableOpacity>
