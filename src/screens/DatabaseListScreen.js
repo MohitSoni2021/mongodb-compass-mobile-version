@@ -23,16 +23,21 @@ export default function DatabaseListScreen() {
     const [databases, setDatabases] = useState([]);
     const [loading, setLoading] = useState(true);
 
-    useEffect(() => { loadDatabases(); }, [activeUri]);
+    useEffect(() => {
+        if (!activeUri) {
+            navigation.replace('Connect');
+            return;
+        }
+        loadDatabases();
+    }, [activeUri]);
 
     const loadDatabases = async () => {
-        if (!activeUri) return;
         setLoading(true);
         try {
             const data = await fetchDatabases(activeUri);
             setDatabases(data.databases || []);
-        } catch (error) {
-            Alert.alert('Analysis Failed', error?.response?.data?.error || error.message);
+        } catch (err) {
+            Alert.alert('Analysis Failed', err.error || err.message);
         } finally {
             setLoading(false);
         }

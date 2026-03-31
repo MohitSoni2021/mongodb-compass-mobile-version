@@ -26,17 +26,21 @@ export default function CollectionListScreen() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
+        if (!activeUri) {
+            navigation.replace('Connect');
+            return;
+        }
         loadCollections();
     }, [activeUri, dbName]);
 
     const loadCollections = async () => {
-        if (!activeUri || !dbName) return;
+        if (!dbName) return;
         setLoading(true);
         try {
             const data = await fetchCollections(activeUri, dbName);
             setCollections(data.collections || []);
-        } catch (error) {
-            Alert.alert('Analysis Failed', error?.response?.data?.error || error.message);
+        } catch (err) {
+            Alert.alert('Analysis Failed', err.error || err.message);
         } finally {
             setLoading(false);
         }

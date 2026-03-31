@@ -1,15 +1,31 @@
 import axios from 'axios';
 
-// For local testing on android emulator, it should be 10.0.2.2. For iOS it's localhost.
-// Replace with network IP if testing on physical device.
-const API_URL = process.env.EXPO_PUBLIC_API_URL || 'http://10.0.2.2:3000/api';
+// Fallback to localhost if EXPO_PUBLIC_API_URL is missing. 
+// Note: 10.0.2.2 is only for Android Emulators. 
+// For production/physical devices, you MUST provide the server IP in .env
+const API_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3000/api';
 
 const apiClient = axios.create({
     baseURL: API_URL,
+    timeout: 10000, // 10s timeout to prevent hanging
     headers: {
         'Content-Type': 'application/json',
     },
 });
+
+// Response interceptor to simplify error handling on screens
+apiClient.interceptors.response.use(
+    (response) => response,
+    (error) => {
+        let msg = 'An unexpected error occurred.';
+        if (error.code === 'ECONNABORTED') msg = 'Request timed out. Server may be slow.';
+        else if (!error.response) msg = 'Network error. Server unreachable.';
+        else if (error.response.data && error.response.data.error) msg = error.response.data.error;
+        else if (error.response.data && typeof error.response.data === 'string') msg = error.response.data;
+        
+        return Promise.reject({ error: msg, message: msg });
+    }
+);
 
 export const connectDb = async (uri) => {
     const response = await apiClient.post('/connect', { uri });

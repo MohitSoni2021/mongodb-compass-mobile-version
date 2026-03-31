@@ -51,18 +51,22 @@ export default function DocumentListScreen() {
     const [isSaving, setIsSaving] = useState(false);
 
     useEffect(() => {
+        if (!activeUri) {
+            navigation.replace('Connect');
+            return;
+        }
         loadDocs(page);
     }, [activeUri, dbName, collectionName, page]);
 
     const loadDocs = async (pageNum) => {
-        if (!activeUri || !dbName || !collectionName) return;
+        if (!dbName || !collectionName) return;
         setLoading(true);
         try {
             const data = await fetchDocuments(activeUri, dbName, collectionName, pageNum, 10);
             setDocs(data.documents || []);
             setTotalPages(data.totalPages || 1);
-        } catch (error) {
-            Alert.alert('Analysis Failed', error?.response?.data?.error || error.message);
+        } catch (err) {
+            Alert.alert('Analysis Failed', err.error || err.message);
         } finally {
             setLoading(false);
         }
@@ -94,8 +98,8 @@ export default function DocumentListScreen() {
                             const filter = { _id: doc._id };
                             await deleteDocument(activeUri, dbName, collectionName, filter);
                             loadDocs(page);
-                        } catch (error) {
-                            Alert.alert('Delete Failed', error?.response?.data?.error || error.message);
+                        } catch (err) {
+                            Alert.alert('Delete Failed', err.error || err.message);
                         }
                     }
                 }
@@ -124,8 +128,8 @@ export default function DocumentListScreen() {
             }
             setModalVisible(false);
             loadDocs(page);
-        } catch (error) {
-            Alert.alert('Operation Failed', error?.response?.data?.error || error.message);
+        } catch (err) {
+            Alert.alert('Operation Failed', err.error || err.message);
         } finally {
             setIsSaving(false);
         }

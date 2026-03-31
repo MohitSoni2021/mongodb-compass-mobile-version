@@ -61,8 +61,8 @@ export default function ConnectScreen() {
             }
             
             navigation.navigate('Databases');
-        } catch (error) {
-            Alert.alert('Connection Failed', error?.response?.data?.error || error.message);
+        } catch (err) {
+            Alert.alert('Connection Failed', err.error || err.message);
         } finally {
             setLoading(false);
         }
