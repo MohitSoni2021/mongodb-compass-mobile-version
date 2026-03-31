@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "frontend",
-    "slug": "frontend",
+    "name": "mongoDB Compass",
+    "slug": "mongodb-compass",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
