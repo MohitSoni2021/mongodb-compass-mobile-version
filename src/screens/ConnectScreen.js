@@ -76,8 +76,8 @@ export default function ConnectScreen() {
                                 <Box className="bg-[#1e293b] p-2.5 rounded-2xl shadow-sm">
                                     <Database size={20} color="white" />
                                 </Box>
-                                <Text className="text-[#64748b] text-[11px] font-black uppercase tracking-[0.25em] font-['InclusiveSans']">
-                                    Cluster Explorer
+                                <Text className="text-[#64748b] text-[11px] font-black uppercase tracking-[0.25em] font-['MontserratBold']">
+                                    Compass Mobile
                                 </Text>
                             </HStack>
                             <TouchableOpacity className="bg-white p-2.5 rounded-xl border border-slate-100 shadow-sm">
@@ -86,11 +86,11 @@ export default function ConnectScreen() {
                         </HStack>
                         
                         <VStack className="mt-4">
-                            <Text className="text-[#1e293b] text-4xl font-black leading-[1.1] font-['InclusiveSans'] tracking-tighter">
-                                Secure Cloud {"\n"}<Text className="text-teal-600 font-['InclusiveSans']">Deployment</Text>
+                            <Text className="text-[#1e293b] text-4xl font-black leading-[1.1] font-['MontserratBlack'] tracking-tighter">
+                                MongoDB {"\n"}<Text className="text-teal-600 font-['MontserratBlack']">Atlas Cluster</Text>
                             </Text>
-                            <Text className="text-[#64748b] text-sm font-medium font-['InclusiveSans'] mt-3 leading-6">
-                                Connect your BSON storage hub with end-to-end TLS encryption and native identity auth.
+                            <Text className="text-[#64748b] text-sm font-medium font-['Montserrat'] mt-3 leading-6">
+                                Connect to your MongoDB databases locally or in the cloud with secure TLS encryption.
                             </Text>
                         </VStack>
                     </VStack>
@@ -103,7 +103,7 @@ export default function ConnectScreen() {
                                     <Box className="bg-[#EFF6FF] p-2 rounded-full">
                                         <Plus size={14} color="#2563eb" />
                                     </Box>
-                                    <Text className="text-[#1e293b] font-black text-xs uppercase tracking-widest font-['InclusiveSans']">Identity & Access</Text>
+                                    <Text className="text-[#1e293b] font-black text-xs uppercase tracking-widest font-['MontserratBold']">New Connection</Text>
                                 </HStack>
                                 <Box className="bg-emerald-50 px-2.5 py-1.5 rounded-xl border border-emerald-100">
                                     <ShieldCheck size={14} color="#059669" />
@@ -146,7 +146,7 @@ export default function ConnectScreen() {
                                 {loading ? <ButtonSpinner color="white" /> : (
                                     <HStack space="sm" className="items-center">
                                          <Zap size={18} color="white" fill="white" />
-                                         <ButtonText className="font-extrabold text-[#FAF9F6] text-lg font-['InclusiveSans']">Establish Tunnel</ButtonText>
+                                         <ButtonText className="font-extrabold text-[#FAF9F6] text-lg font-['MontserratBold']">Connect to Cluster</ButtonText>
                                     </HStack>
                                 )}
                             </Button>
@@ -157,8 +157,8 @@ export default function ConnectScreen() {
                     {connections.length > 0 && (
                         <VStack space="lg" className="mt-6 mb-10">
                             <HStack className="justify-between items-center px-1">
-                                <Text className="text-[#64748b] font-black text-[10px] uppercase tracking-[0.2em] font-['InclusiveSans']">
-                                    RECENTLY MANAGED NODES
+                                <Text className="text-[#64748b] font-black text-[10px] uppercase tracking-[0.2em] font-['MontserratBold']">
+                                    RECENT CONNECTIONS
                                 </Text>
                                 <LayoutGrid size={14} color="#94a3b8" />
                             </HStack>

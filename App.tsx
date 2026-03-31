@@ -11,6 +11,11 @@ import {
     useFonts, 
     InclusiveSans_400Regular 
 } from '@expo-google-fonts/inclusive-sans';
+import {
+    Montserrat_400Regular,
+    Montserrat_700Bold,
+    Montserrat_900Black
+} from '@expo-google-fonts/montserrat';
 import * as SplashScreen from 'expo-splash-screen';
 
 SplashScreen.preventAutoHideAsync();
@@ -18,6 +23,9 @@ SplashScreen.preventAutoHideAsync();
 export default function App() {
     const [fontsLoaded] = useFonts({
         InclusiveSans: InclusiveSans_400Regular,
+        Montserrat: Montserrat_400Regular,
+        MontserratBold: Montserrat_700Bold,
+        MontserratBlack: Montserrat_900Black,
     });
 
     React.useEffect(() => {

@@ -84,12 +84,12 @@ export default function DocumentListScreen() {
 
     const handleDelete = (doc) => {
         Alert.alert(
-            'Purge Document',
-            'Delete this BSON record permanently?',
+            'Delete Document',
+            'Are you sure you want to delete this document permanently?',
             [
                 { text: 'Cancel', style: 'cancel' },
                 { 
-                    text: 'Purge', 
+                    text: 'Delete', 
                     style: 'destructive',
                     onPress: async () => {
                         try {
@@ -97,7 +97,7 @@ export default function DocumentListScreen() {
                             await deleteDocument(activeUri, dbName, collectionName, filter);
                             loadDocs(page);
                         } catch (error) {
-                            Alert.alert('Purge Failed', error?.response?.data?.error || error.message);
+                            Alert.alert('Delete Failed', error?.response?.data?.error || error.message);
                         }
                     }
                 }
@@ -150,8 +150,8 @@ export default function DocumentListScreen() {
                         <FileJson size={18} color="#2563eb" />
                     </Box>
                     <VStack>
-                        <Text className="text-[#1e293b] font-black text-[10px] uppercase tracking-widest font-['InclusiveSans']">BSON RECORD</Text>
-                        <Text className="text-slate-400 text-[8px] font-bold font-['InclusiveSans'] uppercase">ID: {String(item._id).substring(0, 10)}</Text>
+                        <Text className="text-[#1e293b] font-black text-[10px] uppercase tracking-widest font-['MontserratBold']">DOCUMENT</Text>
+                        <Text className="text-slate-400 text-[8px] font-bold font-['Montserrat'] uppercase">ID: {String(item._id).substring(0, 14)}</Text>
                     </VStack>
                 </HStack>
                 <HStack space="xs">
@@ -187,7 +187,7 @@ export default function DocumentListScreen() {
                                 {item.name || String(item._id)}
                             </Text>
                             <Text className="text-slate-400 text-[10px] font-bold uppercase tracking-wider font-['InclusiveSans']" numberOfLines={1}>
-                                Fields: {Object.keys(item).length} • Partial ID: {String(item._id).substring(0, 8)}
+                                Fields: {Object.keys(item).length} • ID: {String(item._id).substring(0, 12)}...
                             </Text>
                         </VStack>
                     </HStack>
@@ -260,8 +260,8 @@ export default function DocumentListScreen() {
                             <ArrowLeft size={20} color="#1e293b" />
                         </TouchableOpacity>
                         <VStack className="flex-1">
-                            <Text className="text-[#1e293b] text-2xl font-black font-['InclusiveSans'] tracking-tighter" numberOfLines={1}>{collectionName}</Text>
-                            <Text className="text-[#64748b] text-[11px] font-bold uppercase tracking-widest font-['InclusiveSans'] mt-1">Snapshot of Records</Text>
+                            <Text className="text-[#1e293b] text-2xl font-black font-['MontserratBlack'] tracking-tighter" numberOfLines={1}>{collectionName}</Text>
+                            <Text className="text-[#64748b] text-[11px] font-bold uppercase tracking-widest font-['MontserratBold'] mt-1">Documents</Text>
                         </VStack>
                     </HStack>
                     <TouchableOpacity 
@@ -301,7 +301,7 @@ export default function DocumentListScreen() {
             {loading ? (
                 <VStack className="flex-1 justify-center items-center">
                     <Spinner size="large" color="#1e293b" />
-                    <Text className="text-slate-400 font-bold uppercase tracking-widest text-[10px] font-['InclusiveSans'] mt-6">Analyzing BSON Hub...</Text>
+                    <Text className="text-slate-400 font-bold uppercase tracking-widest text-[10px] font-['InclusiveSans'] mt-6">Loading Documents...</Text>
                 </VStack>
             ) : (
                 <View className="flex-1 px-7">
@@ -324,7 +324,7 @@ export default function DocumentListScreen() {
                                     <Box className="bg-white p-6 rounded-full border border-dashed border-slate-200">
                                         <FileJson size={48} color="#cbd5e1" />
                                     </Box>
-                                    <Text className="text-slate-400 text-sm font-medium font-['InclusiveSans'] text-center">Empty storage node.</Text>
+                                    <Text className="text-slate-400 text-sm font-medium font-['InclusiveSans'] text-center">No documents found.</Text>
                                 </VStack>
                             }
                         />
@@ -358,10 +358,10 @@ export default function DocumentListScreen() {
                 <ModalContent className="bg-[#FAF9F6] rounded-t-[3rem] h-[90%] mt-auto border-t border-slate-200">
                     <ModalHeader className="p-8 pb-4">
                         <VStack space="xs">
-                            <Text className="text-[#1e293b] font-black text-3xl font-['InclusiveSans'] tracking-tighter">{selectedDoc ? 'Modify Object' : 'Deploy Object'}</Text>
+                            <Text className="text-[#1e293b] font-black text-3xl font-['MontserratBlack'] tracking-tighter">{selectedDoc ? 'Edit Document' : 'Insert Document'}</Text>
                             <HStack space="xs" className="items-center">
                                 <LayoutGrid size={10} color="#64748B" />
-                                <Text className="text-slate-500 text-[10px] font-bold uppercase tracking-[0.2em] font-['InclusiveSans']">Schema-less Sync</Text>
+                                <Text className="text-slate-500 text-[10px] font-bold uppercase tracking-[0.2em] font-['MontserratBold']">JSON Editor</Text>
                             </HStack>
                         </VStack>
                         <ModalCloseButton className="bg-slate-100 rounded-full p-2.5">
@@ -395,7 +395,7 @@ export default function DocumentListScreen() {
                             {isSaving ? <Spinner color="white" /> : (
                                 <HStack space="sm" className="items-center">
                                     <Check size={20} color="white" />
-                                    <ButtonText className="font-extrabold text-xl font-['InclusiveSans']">Execute Sync</ButtonText>
+                                    <ButtonText className="font-extrabold text-xl font-['InclusiveSans']">Save Document</ButtonText>
                                 </HStack>
                             )}
                         </Button>

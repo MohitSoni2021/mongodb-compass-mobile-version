@@ -85,8 +85,8 @@ export default function DatabaseListScreen() {
                             <ArrowLeft size={20} color="#1e293b" />
                         </TouchableOpacity>
                         <VStack>
-                            <Text className="text-[#1e293b] text-2xl font-black font-['InclusiveSans'] tracking-tighter">Database Hub</Text>
-                            <Text className="text-[#64748b] text-[11px] font-bold uppercase tracking-widest font-['InclusiveSans'] mt-1">Found Instances</Text>
+                            <Text className="text-[#1e293b] text-2xl font-black font-['MontserratBlack'] tracking-tighter">Databases</Text>
+                            <Text className="text-[#64748b] text-[11px] font-bold uppercase tracking-widest font-['MontserratBold'] mt-1">Cluster Overview</Text>
                         </VStack>
                     </HStack>
                     <TouchableOpacity 
@@ -101,7 +101,7 @@ export default function DatabaseListScreen() {
             {loading ? (
                 <VStack className="flex-1 justify-center items-center" space="md">
                     <Spinner size="large" color="#1e293b" />
-                    <Text className="text-slate-400 font-bold uppercase tracking-widest text-[10px] font-['InclusiveSans'] mt-4">Connecting Cluster...</Text>
+                    <Text className="text-slate-400 font-bold uppercase tracking-widest text-[10px] font-['InclusiveSans'] mt-4">Loading Databases...</Text>
                 </VStack>
             ) : (
                 <FlatList
