@@ -3,7 +3,7 @@ import { FlatList, Alert, SafeAreaView } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useConnectionStore } from '../store/useConnectionStore';
 import { fetchCollections } from '../services/api';
-import { Layers, ChevronRight, Search } from 'lucide-react-native';
+import { Layers, ChevronRight, Search, LayoutGrid } from 'lucide-react-native';
 
 // Gluestack UI
 import { Box } from '@/components/ui/box';
@@ -42,48 +42,56 @@ export default function CollectionListScreen() {
 
     const renderItem = ({ item }) => (
         <Card 
-            className="bg-slate-900/40 p-4 rounded-3xl mb-4 border border-slate-700/40 active:bg-slate-800/60 transition-all uppercase"
+            className="bg-white p-5 rounded-[2rem] mb-4 border border-[#E0F2F1] shadow-sm active:bg-slate-50 overflow-hidden"
             onPress={() => navigation.navigate('Documents', { dbName, collectionName: item.name })}
         >
             <HStack className="items-center justify-between">
-                <HStack className="items-center">
-                    <Box className="bg-blue-500/10 p-3 rounded-2xl border border-blue-500/20 mr-4">
-                        <Layers size={22} color="#3b82f6" />
+                <HStack className="items-center flex-1" space="md">
+                    <Box className="bg-[#F1F8E9] p-3.5 rounded-2xl">
+                        <Layers size={24} color="#558B2F" />
                     </Box>
-                    <VStack>
-                        <Text className="text-white text-base font-black tracking-tight">{item.name}</Text>
-                        <Text className="text-slate-500 text-[10px] font-bold tracking-widest mt-0.5">
-                            ENTITY TYPE: {item.type.toUpperCase()}
-                        </Text>
+                    <VStack className="flex-1">
+                        <Text className="text-[#004D40] text-lg font-bold font-['InclusiveSans'] tracking-tight mb-0.5">{item.name}</Text>
+                        <HStack className="items-center" space="xs">
+                            <LayoutGrid size={12} color="#94A3B8" />
+                            <Text className="text-slate-400 text-[10px] font-bold uppercase tracking-widest font-['InclusiveSans']">
+                                TYPE: {item.type.toUpperCase()}
+                            </Text>
+                        </HStack>
                     </VStack>
                 </HStack>
-                <ChevronRight size={18} color="#475569" />
+                <Box className="bg-[#00796B] p-1.5 rounded-full">
+                    <ChevronRight size={14} color="white" />
+                </Box>
             </HStack>
         </Card>
     );
 
     return (
-        <SafeAreaView className="flex-1 bg-slate-950">
-            <VStack className="p-5" space="xs">
-                <Text className="text-slate-400 font-bold uppercase tracking-widest text-[10px]">Active Data Object</Text>
-                <Text className="text-white font-black text-3xl tracking-tighter">{dbName}</Text>
-                <Divider className="mt-4 bg-slate-800/50" />
+        <SafeAreaView className="flex-1 bg-[#F8FBFA]">
+            <VStack className="p-6 pt-10" space="lg">
+                <VStack space="xs">
+                    <Text className="text-slate-500 font-bold uppercase tracking-widest text-[10px] font-['InclusiveSans']">Target Namespace</Text>
+                    <Text className="text-[#004D40] font-black text-3xl font-['InclusiveSans'] tracking-tighter" numberOfLines={1}>{dbName}</Text>
+                </VStack>
+                <Divider className="bg-[#E0F2F1]" />
             </VStack>
-            
+
             {loading ? (
-                <VStack className="flex-1 justify-center items-center">
-                    <Spinner size="large" color="#3b82f6" />
+                <VStack className="flex-1 justify-center items-center" space="md">
+                    <Spinner size="large" color="#00796B" />
+                    <Text className="text-slate-400 font-bold uppercase tracking-widest text-[10px] font-['InclusiveSans'] mt-2">Indexing Collections...</Text>
                 </VStack>
             ) : (
                 <FlatList
                     data={collections}
                     keyExtractor={(item) => item.name}
                     renderItem={renderItem}
-                    contentContainerStyle={{ padding: 20, paddingTop: 0 }}
+                    contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 24 }}
                     ListEmptyComponent={
                         <VStack className="items-center mt-20" space="md">
-                            <Layers size={48} color="#334155" />
-                            <Text className="text-slate-500 text-sm">No collections found in {dbName}.</Text>
+                            <Layers size={48} color="#CBD5E1" />
+                            <Text className="text-slate-400 text-sm font-medium font-['InclusiveSans']">This database has no collections.</Text>
                         </VStack>
                     }
                 />

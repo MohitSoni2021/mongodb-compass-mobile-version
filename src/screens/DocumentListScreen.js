@@ -3,7 +3,7 @@ import { FlatList, Alert, SafeAreaView, TextInput, ScrollView } from 'react-nati
 import { useRoute } from '@react-navigation/native';
 import { useConnectionStore } from '../store/useConnectionStore';
 import { fetchDocuments, insertDocument, updateDocument, deleteDocument } from '../services/api';
-import { FileJson, Edit2, Trash2, Plus, X, ArrowLeft, ArrowRight, Save, LayoutGrid } from 'lucide-react-native';
+import { FileJson, Edit2, Trash2, Plus, X, ArrowLeft, ArrowRight, Save, LayoutGrid, Database, Terminal } from 'lucide-react-native';
 
 // Gluestack UI
 import { Box } from '@/components/ui/box';
@@ -64,7 +64,7 @@ export default function DocumentListScreen() {
     const handleDelete = (doc) => {
         Alert.alert(
             'Delete Document',
-            'Are you sure you want to delete this document?',
+            'Remove this BSON object permanently?',
             [
                 { text: 'Cancel', style: 'cancel' },
                 { 
@@ -113,25 +113,28 @@ export default function DocumentListScreen() {
     };
 
     const renderItem = ({ item }) => (
-        <Card className="bg-slate-900/60 p-5 rounded-3xl mb-5 border border-slate-800/80 shadow-md">
-            <HStack className="justify-between items-center mb-4 pb-3 border-b border-slate-800/50">
+        <Card className="bg-white p-5 rounded-[2.5rem] mb-6 border border-[#E0F2F1] shadow-xl shadow-teal-900/5 overflow-hidden">
+            <HStack className="justify-between items-center mb-4 pb-3 border-b border-slate-100">
                 <HStack space="sm" className="items-center">
-                    <Box className="bg-violet-500/20 p-2 rounded-lg">
-                        <FileJson size={14} color="#a78bfa" />
+                    <Box className="bg-[#E1F5FE] p-2.5 rounded-xl">
+                        <FileJson size={16} color="#0288D1" />
                     </Box>
-                    <Text className="text-violet-400 font-black text-[10px] uppercase tracking-widest">BSON Object</Text>
+                    <VStack>
+                        <Text className="text-[#0288D1] font-black text-[9px] uppercase tracking-widest font-['InclusiveSans']">BSON OBJECT</Text>
+                        <Text className="text-slate-400 text-[8px] font-bold font-['InclusiveSans']">REF_ID: {String(item._id).substring(0, 8)}...</Text>
+                    </VStack>
                 </HStack>
                 <HStack space="xs">
-                    <Button variant="link" className="p-2 h-auto w-auto bg-slate-800/50 rounded-xl" onPress={() => handleEdit(item)}>
-                        <ButtonIcon as={Edit2} size="sm" color="#38bdf8" />
+                    <Button variant="link" className="p-2 h-auto w-auto bg-slate-50 rounded-xl" onPress={() => handleEdit(item)}>
+                        <ButtonIcon as={Edit2} size="sm" color="#00796B" />
                     </Button>
-                    <Button variant="link" className="p-2 h-auto w-auto bg-slate-800/50 rounded-xl" onPress={() => handleDelete(item)}>
-                        <ButtonIcon as={Trash2} size="sm" color="#f43f5e" />
+                    <Button variant="link" className="p-2 h-auto w-auto bg-slate-50 rounded-xl" onPress={() => handleDelete(item)}>
+                        <ButtonIcon as={Trash2} size="sm" color="#F43F5E" />
                     </Button>
                 </HStack>
             </HStack>
-            <Box className="bg-slate-950/80 p-4 rounded-2xl border border-slate-900 shadow-inner">
-                <Text className="text-emerald-400 font-mono text-[11px] leading-5">
+            <Box className="bg-[#F8FBFA] p-5 rounded-2xl border border-slate-100 shadow-inner">
+                <Text className="text-[#004D40] font-mono text-[11px] leading-6">
                     {JSON.stringify(item, null, 2)}
                 </Text>
             </Box>
@@ -139,104 +142,122 @@ export default function DocumentListScreen() {
     );
 
     return (
-        <SafeAreaView className="flex-1 bg-slate-950">
-            <VStack className="p-5 border-b border-slate-900" space="md">
+        <SafeAreaView className="flex-1 bg-[#F8FBFA]">
+            <VStack className="p-6 pt-10" space="lg">
                 <HStack className="justify-between items-center">
                     <VStack className="flex-1 mr-4">
                         <HStack space="xs" className="items-center mb-1">
-                            <LayoutGrid size={14} color="#64748b" />
-                            <Text className="text-slate-500 font-bold uppercase tracking-widest text-[9px]">Collection Scope</Text>
+                            <LayoutGrid size={12} color="#94A3B8" />
+                            <Text className="text-slate-500 font-bold uppercase tracking-widest text-[10px] font-['InclusiveSans']">Target Collection</Text>
                         </HStack>
-                        <Text className="text-white font-black text-2xl truncate" numberOfLines={1}>{collectionName}</Text>
-                        <Text className="text-slate-500 text-[10px] font-medium mt-1">
-                            Displaying {docs.length} assets • Page {page} of {Math.max(1, totalPages)}
-                        </Text>
+                        <Text className="text-[#004D40] font-black text-3xl font-['InclusiveSans'] tracking-tighter" numberOfLines={1}>{collectionName}</Text>
+                        <Box className="bg-[#E0F2F1] mt-2 self-start px-2 py-0.5 rounded-md">
+                            <Text className="text-[#00796B] text-[9px] font-bold font-['InclusiveSans'] uppercase tracking-widest">
+                                Page {page} of {Math.max(1, totalPages)} • {docs.length} Items Local
+                            </Text>
+                        </Box>
                     </VStack>
                     <Button 
-                        size="md"
-                        className="bg-violet-600 rounded-2xl shadow-lg shadow-violet-600/20 px-6 h-12"
+                        size="xl"
+                        className="bg-[#00796B] rounded-2xl shadow-xl shadow-teal-500/30 px-6 h-14"
                         onPress={handleAdd}
                     >
                         <ButtonIcon as={Plus} color="white" />
-                        <ButtonText className="font-bold ml-2">Insert</ButtonText>
+                        <ButtonText className="font-bold ml-2 font-['InclusiveSans']">Insert</ButtonText>
                     </Button>
                 </HStack>
+                <Divider className="bg-[#E0F2F1]" />
             </VStack>
             
             {loading ? (
                 <VStack className="flex-1 justify-center items-center">
-                    <Spinner size="large" color="#8b5cf6" />
+                    <Spinner size="large" color="#00796B" />
+                    <Text className="text-slate-400 font-bold uppercase tracking-widest text-[10px] font-['InclusiveSans'] mt-2">Querying Engine...</Text>
                 </VStack>
             ) : (
                 <FlatList
                     data={docs}
                     keyExtractor={(item) => String(item._id || Math.random())}
                     renderItem={renderItem}
-                    contentContainerStyle={{ padding: 20 }}
+                    contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 100 }}
                     ListEmptyComponent={
                         <VStack className="items-center mt-20" space="md">
-                            <FileJson size={48} color="#1e293b" />
-                            <Text className="text-slate-500 text-sm font-medium">Empty collection</Text>
+                            <FileJson size={48} color="#CBD5E1" />
+                            <Text className="text-slate-400 text-sm font-medium font-['InclusiveSans']">No documents in this scope.</Text>
                         </VStack>
                     }
                 />
             )}
 
             {/* Pagination Controls */}
-            <HStack className="justify-between items-center p-6 border-t border-slate-900 bg-slate-950/80 backdrop-blur-md">
-                <Button 
-                    variant="solid"
-                    className={`bg-slate-900 rounded-xl h-12 px-4 shadow-sm ${page === 1 ? 'opacity-20' : ''}`}
-                    onPress={() => setPage(Math.max(1, page - 1))}
-                    disabled={page === 1}
-                >
-                    <ButtonIcon as={ArrowLeft} color="white" />
-                </Button>
-                <Text className="text-white font-black tracking-widest text-xs">{page} / {Math.max(1, totalPages)}</Text>
-                <Button 
-                    variant="solid"
-                    className={`bg-slate-900 rounded-xl h-12 px-4 shadow-sm ${page >= totalPages ? 'opacity-20' : ''}`}
-                    onPress={() => setPage(Math.min(totalPages, page + 1))}
-                    disabled={page >= totalPages}
-                >
-                    <ButtonIcon as={ArrowRight} color="white" />
-                </Button>
-            </HStack>
+            <Box className="absolute bottom-0 left-0 right-0 bg-[#F8FBFA]/90 pt-4 pb-10 px-8 border-t border-[#E0F2F1]">
+                <HStack className="justify-between items-center">
+                    <Button 
+                        onPress={() => setPage(Math.max(1, page - 1))}
+                        disabled={page === 1}
+                        variant="link"
+                        className={`bg-white rounded-2xl h-12 w-12 items-center justify-center border border-[#E0F2F1] shadow-sm ${page === 1 ? 'opacity-20' : ''}`}
+                    >
+                        <ButtonIcon as={ArrowLeft} color="#00796B" size="md" />
+                    </Button>
+                    
+                    <VStack className="items-center">
+                        <Text className="text-[#004D40] font-black tracking-widest text-xs font-['InclusiveSans']">{page} / {Math.max(1, totalPages)}</Text>
+                        <Text className="text-slate-400 text-[8px] font-bold uppercase font-['InclusiveSans']">Navigation Hub</Text>
+                    </VStack>
+
+                    <Button 
+                        onPress={() => setPage(Math.min(totalPages, page + 1))}
+                        disabled={page >= totalPages}
+                        variant="link"
+                        className={`bg-white rounded-2xl h-12 w-12 items-center justify-center border border-[#E0F2F1] shadow-sm ${page >= totalPages ? 'opacity-20' : ''}`}
+                    >
+                        <ButtonIcon as={ArrowRight} color="#00796B" size="md" />
+                    </Button>
+                </HStack>
+            </Box>
 
             {/* Editor Modal */}
-            <Modal isOpen={modalVisible} onClose={() => setModalVisible(false)} size="lg">
+            <Modal isOpen={modalVisible} onClose={() => setModalVisible(false)} size="full">
                 <ModalBackdrop />
-                <ModalContent className="bg-slate-900 border-t border-slate-800 rounded-t-[2.5rem] h-[85%] mt-auto">
-                    <ModalHeader className="p-6 border-b border-slate-800/50">
+                <ModalContent className="bg-[#F8FBFA] border-t border-[#E0F2F1] rounded-t-[3rem] h-[90%] mt-auto shadow-2xl">
+                    <ModalHeader className="p-8 pb-4">
                         <VStack space="xs">
-                            <Text className="text-white font-black text-2xl tracking-tighter">
-                                {selectedDoc ? 'Modify Document' : 'Initialize Document'}
+                            <Text className="text-[#004D40] font-black text-3xl font-['InclusiveSans'] tracking-tighter">
+                                {selectedDoc ? 'Modify Object' : 'Create Object'}
                             </Text>
-                            <Text className="text-slate-500 text-[10px] font-bold uppercase tracking-widest">Native JSON Syntax</Text>
+                            <HStack space="xs" className="items-center">
+                                <Terminal size={10} color="#64748B" />
+                                <Text className="text-slate-500 text-[10px] font-bold uppercase tracking-[0.2em] font-['InclusiveSans']">Native JSON Syntax</Text>
+                            </HStack>
                         </VStack>
-                        <ModalCloseButton className="bg-slate-800 rounded-full p-2">
-                             <Box className="items-center justify-center p-1">
-                                <X size={20} color="white" />
+                        <ModalCloseButton className="bg-[#E1F1F0] rounded-full p-2.5 active:bg-[#B2DFDB]">
+                             <Box className="items-center justify-center h-6 w-6">
+                                <X size={20} color="#00796B" />
                              </Box>
                         </ModalCloseButton>
                     </ModalHeader>
-                    <ModalBody className="p-4">
-                        <ScrollView className="bg-slate-950 rounded-3xl border border-slate-800 p-4">
-                            <TextInput
-                                className="text-emerald-400 font-mono text-sm leading-6"
-                                multiline
-                                textAlignVertical="top"
-                                value={jsonInput}
-                                onChangeText={setJsonInput}
-                                autoCapitalize="none"
-                                autoCorrect={false}
-                                placeholderTextColor="#334155"
-                            />
-                        </ScrollView>
+                    <ModalBody className="p-6">
+                        <Box className="bg-white rounded-[2rem] border border-[#E0F2F1] p-6 shadow-inner flex-1">
+                            <VStack space="md" className="flex-1">
+                                <ScrollView className="flex-1">
+                                    <TextInput
+                                        className="text-[#00796B] font-mono text-sm leading-7"
+                                        multiline
+                                        textAlignVertical="top"
+                                        value={jsonInput}
+                                        onChangeText={setJsonInput}
+                                        autoCapitalize="none"
+                                        autoCorrect={false}
+                                        placeholderTextColor="#94A3B8"
+                                    />
+                                </ScrollView>
+                            </VStack>
+                        </Box>
                     </ModalBody>
-                    <ModalFooter className="p-6 border-t border-slate-800/50">
+                    <ModalFooter className="p-8 pt-2">
                         <Button 
-                            className="bg-violet-600 rounded-2xl h-14 w-full shadow-xl shadow-violet-600/30"
+                            className="bg-[#00796B] rounded-[1.5rem] h-16 w-full shadow-2xl shadow-teal-500/40"
                             onPress={handleSave}
                             disabled={isSaving}
                         >
@@ -244,8 +265,8 @@ export default function DocumentListScreen() {
                                 <Spinner color="white" />
                             ) : (
                                 <HStack space="sm" className="items-center">
-                                    <ButtonIcon as={Save} color="white" />
-                                    <ButtonText className="font-bold text-lg">Push to Collection</ButtonText>
+                                    <ButtonIcon as={Save} color="white" size="md" />
+                                    <ButtonText className="font-extrabold text-xl font-['InclusiveSans'] tracking-tight">Deploy to Collection</ButtonText>
                                 </HStack>
                             )}
                         </Button>
