@@ -15,21 +15,21 @@ export default function AppNavigator() {
       <Stack.Navigator 
         initialRouteName="Connect"
         screenOptions={{
-          headerStyle: { backgroundColor: '#F8FBFA' },
-          headerTintColor: '#00796B',
+          headerStyle: { backgroundColor: '#FAF9F6' },
+          headerTintColor: '#1e293b',
           headerTitleStyle: { 
             fontWeight: '900', 
-            fontSize: 18,
-            color: '#004D40',
-            fontFamily: 'InclusiveSans_400Regular'
+            fontSize: 16,
+            color: '#1e293b',
+            fontFamily: 'InclusiveSans'
           },
           headerShadowVisible: false,
         }}
       >
         <Stack.Screen name="Connect" component={ConnectScreen} options={{ headerShown: false }} />
-        <Stack.Screen name="Databases" component={DatabaseListScreen} options={{ title: 'Select Database' }} />
-        <Stack.Screen name="Collections" component={CollectionListScreen} options={{ title: 'Collections' }} />
-        <Stack.Screen name="Documents" component={DocumentListScreen} options={{ title: 'Documents' }} />
+        <Stack.Screen name="Databases" component={DatabaseListScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="Collections" component={CollectionListScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="Documents" component={DocumentListScreen} options={{ headerShown: false }} />
       </Stack.Navigator>
     </NavigationContainer>
   );
