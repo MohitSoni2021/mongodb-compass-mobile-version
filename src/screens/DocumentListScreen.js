@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
-import { FlatList, Alert, SafeAreaView, TextInput, ScrollView } from 'react-native';
+import React, { useEffect, useState, useMemo } from 'react';
+import { FlatList, Alert, SafeAreaView, TextInput, ScrollView, View, TouchableOpacity } from 'react-native';
 import { useRoute } from '@react-navigation/native';
 import { useConnectionStore } from '../store/useConnectionStore';
 import { fetchDocuments, insertDocument, updateDocument, deleteDocument } from '../services/api';
-import { FileJson, Edit2, Trash2, Plus, X, ArrowLeft, ArrowRight, Save, LayoutGrid, Database, Terminal } from 'lucide-react-native';
+import { FileJson, Edit2, Trash2, Plus, X, ArrowLeft, ArrowRight, Save, LayoutGrid, Database, Terminal, List, Columns, Eye } from 'lucide-react-native';
 
 // Gluestack UI
 import { Box } from '@/components/ui/box';
@@ -25,6 +25,7 @@ export default function DocumentListScreen() {
     const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [loading, setLoading] = useState(true);
+    const [viewType, setViewType] = useState('json'); // json, list, table
 
     const [modalVisible, setModalVisible] = useState(false);
     const [selectedDoc, setSelectedDoc] = useState(null);
@@ -51,7 +52,7 @@ export default function DocumentListScreen() {
 
     const handleAdd = () => {
         setSelectedDoc(null);
-        setJsonInput('{\n  \n}');
+        setJsonInput('{\n  "name": "New Record",\n  "status": "Active"\n}');
         setModalVisible(true);
     };
 
@@ -112,8 +113,17 @@ export default function DocumentListScreen() {
         }
     };
 
-    const renderItem = ({ item }) => (
-        <Card className="bg-white p-5 rounded-[2.5rem] mb-6 border border-[#E0F2F1] shadow-xl shadow-teal-900/5 overflow-hidden">
+    const tableHeaders = useMemo(() => {
+        if (docs.length === 0) return ['_id'];
+        const allKeys = new Set();
+        docs.slice(0, 5).forEach(doc => {
+            Object.keys(doc).forEach(key => allKeys.add(key));
+        });
+        return Array.from(allKeys).slice(0, 5); 
+    }, [docs]);
+
+    const renderJsonItem = ({ item }) => (
+        <Card className="bg-white p-5 rounded-[2.5rem] mb-6 border border-[#E0F2F1] shadow-xl shadow-teal-900/5">
             <HStack className="justify-between items-center mb-4 pb-3 border-b border-slate-100">
                 <HStack space="sm" className="items-center">
                     <Box className="bg-[#E1F5FE] p-2.5 rounded-xl">
@@ -125,20 +135,79 @@ export default function DocumentListScreen() {
                     </VStack>
                 </HStack>
                 <HStack space="xs">
-                    <Button variant="link" className="p-2 h-auto w-auto bg-slate-50 rounded-xl" onPress={() => handleEdit(item)}>
-                        <ButtonIcon as={Edit2} size="sm" color="#00796B" />
-                    </Button>
-                    <Button variant="link" className="p-2 h-auto w-auto bg-slate-50 rounded-xl" onPress={() => handleDelete(item)}>
-                        <ButtonIcon as={Trash2} size="sm" color="#F43F5E" />
-                    </Button>
+                    <TouchableOpacity onPress={() => handleEdit(item)} className="p-2 bg-slate-50 rounded-xl">
+                        <Edit2 size={16} color="#00796B" />
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => handleDelete(item)} className="p-2 bg-slate-50 rounded-xl">
+                        <Trash2 size={16} color="#F43F5E" />
+                    </TouchableOpacity>
                 </HStack>
             </HStack>
-            <Box className="bg-[#F8FBFA] p-5 rounded-2xl border border-slate-100 shadow-inner">
+            <Box className="bg-[#F8FBFA] p-5 rounded-2xl border border-slate-100">
                 <Text className="text-[#004D40] font-mono text-[11px] leading-6">
                     {JSON.stringify(item, null, 2)}
                 </Text>
             </Box>
         </Card>
+    );
+
+    const renderListItem = ({ item }) => (
+        <TouchableOpacity 
+            onPress={() => handleEdit(item)}
+            activeOpacity={0.7}
+        >
+            <Card className="bg-white p-4 rounded-3xl mb-3 border border-[#E0F2F1] shadow-sm">
+                <HStack className="items-center justify-between">
+                    <HStack className="items-center flex-1" space="md">
+                        <Box className="bg-[#F1F8E9] p-3 rounded-2xl">
+                            <List size={20} color="#558B2F" />
+                        </Box>
+                        <VStack className="flex-1">
+                            <Text className="text-[#004D40] font-bold text-sm font-['InclusiveSans']" numberOfLines={1}>
+                                {item.name || item._id}
+                            </Text>
+                            <Text className="text-slate-400 text-[10px] font-medium font-['InclusiveSans']" numberOfLines={1}>
+                                Fields: {Object.keys(item).length} • Key: {String(item._id).substring(0, 8)}
+                            </Text>
+                        </VStack>
+                    </HStack>
+                    <Box className="bg-[#00796B] p-1.5 rounded-full">
+                        <Eye size={12} color="white" />
+                    </Box>
+                </HStack>
+            </Card>
+        </TouchableOpacity>
+    );
+
+    const renderTableView = () => (
+        <ScrollView horizontal className="mb-4">
+            <VStack space="xs">
+                <HStack className="bg-[#004D40] rounded-t-2xl p-4 min-w-[500px]">
+                    {tableHeaders.map((header, idx) => (
+                        <Box key={idx} className="flex-1 px-2">
+                            <Text className="text-white font-black text-[10px] uppercase tracking-widest font-['InclusiveSans']">{header}</Text>
+                        </Box>
+                    ))}
+                    <Box className="w-12" />
+                </HStack>
+                {docs.map((doc, dIdx) => (
+                    <TouchableOpacity key={dIdx} onPress={() => handleEdit(doc)}>
+                        <Card className={`bg-white rounded-none border-b border-slate-100 p-4 min-w-[500px] flex-row ${dIdx === docs.length - 1 ? 'rounded-b-2xl border-b-0' : ''}`}>
+                            {tableHeaders.map((header, hIdx) => (
+                                <Box key={hIdx} className="flex-1 px-2">
+                                    <Text className="text-[#004D40] text-xs font-['InclusiveSans']" numberOfLines={1}>
+                                        {typeof doc[header] === 'object' ? '{...}' : String(doc[header] || '-')}
+                                    </Text>
+                                </Box>
+                            ))}
+                            <TouchableOpacity className="w-12 items-center justify-center" onPress={() => handleDelete(doc)}>
+                                <Trash2 size={14} color="#F43F5E" />
+                            </TouchableOpacity>
+                        </Card>
+                    </TouchableOpacity>
+                ))}
+            </VStack>
+        </ScrollView>
     );
 
     return (
@@ -148,14 +217,9 @@ export default function DocumentListScreen() {
                     <VStack className="flex-1 mr-4">
                         <HStack space="xs" className="items-center mb-1">
                             <LayoutGrid size={12} color="#94A3B8" />
-                            <Text className="text-slate-500 font-bold uppercase tracking-widest text-[10px] font-['InclusiveSans']">Target Collection</Text>
+                            <Text className="text-slate-500 font-bold uppercase tracking-widest text-[10px] font-['InclusiveSans']">Target Namespace</Text>
                         </HStack>
                         <Text className="text-[#004D40] font-black text-3xl font-['InclusiveSans'] tracking-tighter" numberOfLines={1}>{collectionName}</Text>
-                        <Box className="bg-[#E0F2F1] mt-2 self-start px-2 py-0.5 rounded-md">
-                            <Text className="text-[#00796B] text-[9px] font-bold font-['InclusiveSans'] uppercase tracking-widest">
-                                Page {page} of {Math.max(1, totalPages)} • {docs.length} Items Local
-                            </Text>
-                        </Box>
                     </VStack>
                     <Button 
                         size="xl"
@@ -166,75 +230,81 @@ export default function DocumentListScreen() {
                         <ButtonText className="font-bold ml-2 font-['InclusiveSans']">Insert</ButtonText>
                     </Button>
                 </HStack>
-                <Divider className="bg-[#E0F2F1]" />
+
+                <HStack className="bg-[#E0F2F1] p-1 rounded-2xl self-center" space="xs">
+                    <Button onPress={() => setViewType('json')} className={`rounded-xl px-5 h-10 ${viewType === 'json' ? 'bg-[#00796B]' : 'bg-transparent'}`}>
+                        <ButtonIcon as={FileJson} color={viewType === 'json' ? 'white' : '#00796B'} size="sm" />
+                        <ButtonText className={`ml-2 font-bold text-xs font-['InclusiveSans'] ${viewType === 'json' ? 'text-white' : 'text-[#00796B]'}`}>JSON</ButtonText>
+                    </Button>
+                    <Button onPress={() => setViewType('list')} className={`rounded-xl px-5 h-10 ${viewType === 'list' ? 'bg-[#00796B]' : 'bg-transparent'}`}>
+                        <ButtonIcon as={List} color={viewType === 'list' ? 'white' : '#00796B'} size="sm" />
+                        <ButtonText className={`ml-2 font-bold text-xs font-['InclusiveSans'] ${viewType === 'list' ? 'text-white' : 'text-[#00796B]'}`}>LIST</ButtonText>
+                    </Button>
+                    <Button onPress={() => setViewType('table')} className={`rounded-xl px-5 h-10 ${viewType === 'table' ? 'bg-[#00796B]' : 'bg-transparent'}`}>
+                        <ButtonIcon as={Columns} color={viewType === 'table' ? 'white' : '#00796B'} size="sm" />
+                        <ButtonText className={`ml-2 font-bold text-xs font-['InclusiveSans'] ${viewType === 'table' ? 'text-white' : 'text-[#00796B]'}`}>TABLE</ButtonText>
+                    </Button>
+                </HStack>
             </VStack>
             
             {loading ? (
                 <VStack className="flex-1 justify-center items-center">
                     <Spinner size="large" color="#00796B" />
-                    <Text className="text-slate-400 font-bold uppercase tracking-widest text-[10px] font-['InclusiveSans'] mt-2">Querying Engine...</Text>
+                    <Text className="text-slate-400 font-bold uppercase tracking-widest text-[10px] font-['InclusiveSans'] mt-2">Connecting to Instance...</Text>
                 </VStack>
             ) : (
-                <FlatList
-                    data={docs}
-                    keyExtractor={(item) => String(item._id || Math.random())}
-                    renderItem={renderItem}
-                    contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 100 }}
-                    ListEmptyComponent={
-                        <VStack className="items-center mt-20" space="md">
-                            <FileJson size={48} color="#CBD5E1" />
-                            <Text className="text-slate-400 text-sm font-medium font-['InclusiveSans']">No documents in this scope.</Text>
-                        </VStack>
-                    }
-                />
+                <View className="flex-1 px-6">
+                    {viewType === 'table' ? (
+                        <FlatList
+                            data={[1]}
+                            renderItem={renderTableView}
+                            contentContainerStyle={{ paddingBottom: 120 }}
+                        />
+                    ) : (
+                        <FlatList
+                            data={docs}
+                            keyExtractor={(item) => String(item._id || Math.random())}
+                            renderItem={viewType === 'json' ? renderJsonItem : renderListItem}
+                            contentContainerStyle={{ paddingBottom: 120 }}
+                            ListEmptyComponent={
+                                <VStack className="items-center mt-20" space="md">
+                                    <FileJson size={48} color="#CBD5E1" />
+                                    <Text className="text-slate-400 text-sm font-medium font-['InclusiveSans']">Empty storage.</Text>
+                                </VStack>
+                            }
+                        />
+                    )}
+                </View>
             )}
 
-            {/* Pagination Controls */}
             <Box className="absolute bottom-0 left-0 right-0 bg-[#F8FBFA]/90 pt-4 pb-10 px-8 border-t border-[#E0F2F1]">
                 <HStack className="justify-between items-center">
-                    <Button 
-                        onPress={() => setPage(Math.max(1, page - 1))}
-                        disabled={page === 1}
-                        variant="link"
-                        className={`bg-white rounded-2xl h-12 w-12 items-center justify-center border border-[#E0F2F1] shadow-sm ${page === 1 ? 'opacity-20' : ''}`}
-                    >
-                        <ButtonIcon as={ArrowLeft} color="#00796B" size="md" />
-                    </Button>
-                    
+                    <TouchableOpacity onPress={() => setPage(Math.max(1, page - 1))} className={`bg-white rounded-2xl h-12 w-12 items-center justify-center border border-[#E0F2F1] ${page === 1 ? 'opacity-20' : ''}`}>
+                        <ArrowLeft size={20} color="#00796B" />
+                    </TouchableOpacity>
                     <VStack className="items-center">
                         <Text className="text-[#004D40] font-black tracking-widest text-xs font-['InclusiveSans']">{page} / {Math.max(1, totalPages)}</Text>
-                        <Text className="text-slate-400 text-[8px] font-bold uppercase font-['InclusiveSans']">Navigation Hub</Text>
+                        <Text className="text-slate-400 text-[8px] font-bold uppercase font-['InclusiveSans']">Navigation Area</Text>
                     </VStack>
-
-                    <Button 
-                        onPress={() => setPage(Math.min(totalPages, page + 1))}
-                        disabled={page >= totalPages}
-                        variant="link"
-                        className={`bg-white rounded-2xl h-12 w-12 items-center justify-center border border-[#E0F2F1] shadow-sm ${page >= totalPages ? 'opacity-20' : ''}`}
-                    >
-                        <ButtonIcon as={ArrowRight} color="#00796B" size="md" />
-                    </Button>
+                    <TouchableOpacity onPress={() => setPage(Math.min(totalPages, page + 1))} className={`bg-white rounded-2xl h-12 w-12 items-center justify-center border border-[#E0F2F1] ${page >= totalPages ? 'opacity-20' : ''}`}>
+                        <ArrowRight size={20} color="#00796B" />
+                    </TouchableOpacity>
                 </HStack>
             </Box>
 
-            {/* Editor Modal */}
             <Modal isOpen={modalVisible} onClose={() => setModalVisible(false)} size="full">
                 <ModalBackdrop />
-                <ModalContent className="bg-[#F8FBFA] border-t border-[#E0F2F1] rounded-t-[3rem] h-[90%] mt-auto shadow-2xl">
+                <ModalContent className="bg-[#F8FBFA] border-t border-[#E0F2F1] rounded-t-[3rem] h-[90%] mt-auto">
                     <ModalHeader className="p-8 pb-4">
                         <VStack space="xs">
-                            <Text className="text-[#004D40] font-black text-3xl font-['InclusiveSans'] tracking-tighter">
-                                {selectedDoc ? 'Modify Object' : 'Create Object'}
-                            </Text>
+                            <Text className="text-[#004D40] font-black text-3xl font-['InclusiveSans'] tracking-tighter">{selectedDoc ? 'Modify Object' : 'Create Object'}</Text>
                             <HStack space="xs" className="items-center">
                                 <Terminal size={10} color="#64748B" />
                                 <Text className="text-slate-500 text-[10px] font-bold uppercase tracking-[0.2em] font-['InclusiveSans']">Native JSON Syntax</Text>
                             </HStack>
                         </VStack>
-                        <ModalCloseButton className="bg-[#E1F1F0] rounded-full p-2.5 active:bg-[#B2DFDB]">
-                             <Box className="items-center justify-center h-6 w-6">
-                                <X size={20} color="#00796B" />
-                             </Box>
+                        <ModalCloseButton className="bg-[#E1F1F0] rounded-full p-2.5">
+                             <X size={20} color="#00796B" />
                         </ModalCloseButton>
                     </ModalHeader>
                     <ModalBody className="p-6">
@@ -242,7 +312,7 @@ export default function DocumentListScreen() {
                             <VStack space="md" className="flex-1">
                                 <ScrollView className="flex-1">
                                     <TextInput
-                                        className="text-[#00796B] font-mono text-sm leading-7"
+                                        className="text-[#00796B] font-mono text-sm leading-7 font-['InclusiveSans']"
                                         multiline
                                         textAlignVertical="top"
                                         value={jsonInput}
@@ -255,20 +325,9 @@ export default function DocumentListScreen() {
                             </VStack>
                         </Box>
                     </ModalBody>
-                    <ModalFooter className="p-8 pt-2">
-                        <Button 
-                            className="bg-[#00796B] rounded-[1.5rem] h-16 w-full shadow-2xl shadow-teal-500/40"
-                            onPress={handleSave}
-                            disabled={isSaving}
-                        >
-                            {isSaving ? (
-                                <Spinner color="white" />
-                            ) : (
-                                <HStack space="sm" className="items-center">
-                                    <ButtonIcon as={Save} color="white" size="md" />
-                                    <ButtonText className="font-extrabold text-xl font-['InclusiveSans'] tracking-tight">Deploy to Collection</ButtonText>
-                                </HStack>
-                            )}
+                    <ModalFooter className="p-6">
+                        <Button className="bg-[#00796B] rounded-[1.5rem] h-16 w-full shadow-2xl" onPress={handleSave} disabled={isSaving}>
+                            {isSaving ? <Spinner color="white" /> : <ButtonText className="font-extrabold text-xl font-['InclusiveSans']">Deploy Record</ButtonText>}
                         </Button>
                     </ModalFooter>
                 </ModalContent>

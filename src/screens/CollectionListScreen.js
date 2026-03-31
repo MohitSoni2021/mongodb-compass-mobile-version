@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { FlatList, Alert, SafeAreaView } from 'react-native';
+import { FlatList, Alert, SafeAreaView, TouchableOpacity } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useConnectionStore } from '../store/useConnectionStore';
 import { fetchCollections } from '../services/api';
@@ -41,30 +41,32 @@ export default function CollectionListScreen() {
     };
 
     const renderItem = ({ item }) => (
-        <Card 
-            className="bg-white p-5 rounded-[2rem] mb-4 border border-[#E0F2F1] shadow-sm active:bg-slate-50 overflow-hidden"
+        <TouchableOpacity 
             onPress={() => navigation.navigate('Documents', { dbName, collectionName: item.name })}
+            activeOpacity={0.7}
         >
-            <HStack className="items-center justify-between">
-                <HStack className="items-center flex-1" space="md">
-                    <Box className="bg-[#F1F8E9] p-3.5 rounded-2xl">
-                        <Layers size={24} color="#558B2F" />
+            <Card className="bg-white p-5 rounded-[2rem] mb-4 border border-[#E0F2F1] shadow-sm">
+                <HStack className="items-center justify-between">
+                    <HStack className="items-center flex-1" space="md">
+                        <Box className="bg-[#F1F8E9] p-3.5 rounded-2xl">
+                            <Layers size={24} color="#558B2F" />
+                        </Box>
+                        <VStack className="flex-1">
+                            <Text className="text-[#004D40] text-lg font-bold font-['InclusiveSans'] tracking-tight mb-0.5">{item.name}</Text>
+                            <HStack className="items-center" space="xs">
+                                <LayoutGrid size={12} color="#94A3B8" />
+                                <Text className="text-slate-400 text-[10px] font-bold uppercase tracking-widest font-['InclusiveSans']">
+                                    TYPE: {item.type.toUpperCase()}
+                                </Text>
+                            </HStack>
+                        </VStack>
+                    </HStack>
+                    <Box className="bg-[#00796B] p-1.5 rounded-full">
+                        <ChevronRight size={14} color="white" />
                     </Box>
-                    <VStack className="flex-1">
-                        <Text className="text-[#004D40] text-lg font-bold font-['InclusiveSans'] tracking-tight mb-0.5">{item.name}</Text>
-                        <HStack className="items-center" space="xs">
-                            <LayoutGrid size={12} color="#94A3B8" />
-                            <Text className="text-slate-400 text-[10px] font-bold uppercase tracking-widest font-['InclusiveSans']">
-                                TYPE: {item.type.toUpperCase()}
-                            </Text>
-                        </HStack>
-                    </VStack>
                 </HStack>
-                <Box className="bg-[#00796B] p-1.5 rounded-full">
-                    <ChevronRight size={14} color="white" />
-                </Box>
-            </HStack>
-        </Card>
+            </Card>
+        </TouchableOpacity>
     );
 
     return (

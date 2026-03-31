@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { FlatList, Alert, SafeAreaView } from 'react-native';
+import { FlatList, Alert, SafeAreaView, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useConnectionStore } from '../store/useConnectionStore';
 import { fetchDatabases } from '../services/api';
@@ -22,9 +22,7 @@ export default function DatabaseListScreen() {
     const [databases, setDatabases] = useState([]);
     const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        loadDatabases();
-    }, [activeUri]);
+    useEffect(() => { loadDatabases(); }, [activeUri]);
 
     const loadDatabases = async () => {
         if (!activeUri) return;
@@ -48,30 +46,32 @@ export default function DatabaseListScreen() {
     };
 
     const renderItem = ({ item }) => (
-        <Card 
-            className="bg-white p-5 rounded-[2rem] mb-4 border border-[#E0F2F1] shadow-sm active:bg-slate-50 overflow-hidden"
+        <TouchableOpacity 
             onPress={() => navigation.navigate('Collections', { dbName: item.name })}
+            activeOpacity={0.7}
         >
-            <HStack className="items-center justify-between">
-                <HStack className="items-center flex-1" space="md">
-                    <Box className="bg-[#E0F2F1] p-3.5 rounded-2xl">
-                        <Database size={24} color="#00796B" />
+            <Card className="bg-white p-5 rounded-[2rem] mb-4 border border-[#E0F2F1] shadow-sm">
+                <HStack className="items-center justify-between">
+                    <HStack className="items-center flex-1" space="md">
+                        <Box className="bg-[#E0F2F1] p-3.5 rounded-2xl">
+                            <Database size={24} color="#00796B" />
+                        </Box>
+                        <VStack className="flex-1">
+                            <Text className="text-[#004D40] text-lg font-bold font-['InclusiveSans'] tracking-tight mb-0.5">{item.name}</Text>
+                            <HStack className="items-center" space="xs">
+                                <HardDrive size={12} color="#94A3B8" />
+                                <Text className="text-slate-400 text-[10px] font-bold uppercase tracking-widest font-['InclusiveSans']">
+                                    {formatSize(item.sizeOnDisk)}
+                                </Text>
+                            </HStack>
+                        </VStack>
+                    </HStack>
+                    <Box className="bg-[#00796B] p-1.5 rounded-full">
+                        <ChevronRight size={14} color="white" />
                     </Box>
-                    <VStack className="flex-1">
-                        <Text className="text-[#004D40] text-lg font-bold font-['InclusiveSans'] tracking-tight mb-0.5">{item.name}</Text>
-                        <HStack className="items-center" space="xs">
-                            <HardDrive size={12} color="#94A3B8" />
-                            <Text className="text-slate-400 text-[10px] font-bold uppercase tracking-widest font-['InclusiveSans']">
-                                {formatSize(item.sizeOnDisk)}
-                            </Text>
-                        </HStack>
-                    </VStack>
                 </HStack>
-                <Box className="bg-[#00796B] p-1.5 rounded-full">
-                    <ChevronRight size={14} color="white" />
-                </Box>
-            </HStack>
-        </Card>
+            </Card>
+        </TouchableOpacity>
     );
 
     return (
@@ -82,12 +82,12 @@ export default function DatabaseListScreen() {
                         <Text className="text-slate-500 font-bold uppercase tracking-widest text-[10px] font-['InclusiveSans']">Active Cluster Node</Text>
                         <Text className="text-[#004D40] font-black text-3xl font-['InclusiveSans'] tracking-tighter">Cluster Explorer</Text>
                     </VStack>
-                    <Button 
+                    <TouchableOpacity 
                         onPress={loadDatabases}
-                        className="bg-[#E0F2F1] p-3 rounded-full active:bg-[#B2DFDB] h-12 w-12"
+                        className="bg-[#E0F2F1] p-3 rounded-full h-12 w-12 items-center justify-center"
                     >
-                        <ButtonIcon as={RefreshCw} color="#00796B" size="md" />
-                    </Button>
+                        <RefreshCw size={20} color="#00796B" />
+                    </TouchableOpacity>
                 </HStack>
                 <Divider className="bg-[#E0F2F1]" />
             </VStack>

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ScrollView, Alert, SafeAreaView, Dimensions } from 'react-native';
+import { ScrollView, Alert, SafeAreaView, Dimensions, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useConnectionStore } from '../store/useConnectionStore';
 import { connectDb } from '../services/api';
@@ -59,7 +59,7 @@ export default function ConnectScreen() {
                             </Text>
                         </HStack>
                         <Text className="text-[#004D40] text-3xl font-black leading-tight font-['InclusiveSans'] mt-2">
-                             Secure Database {"\n"}Explorer <Text className="text-[#00796B]">MongoDB</Text>
+                             Secure Database {"\n"}Explorer <Text className="text-[#00796B] font-['InclusiveSans']">MongoDB</Text>
                         </Text>
                         <Text className="text-slate-500 text-sm font-medium font-['InclusiveSans'] mt-1">
                             Connect to your clusters with end-to-end encryption.
@@ -130,40 +130,44 @@ export default function ConnectScreen() {
                             </Text>
                             
                             {connections.map((conn) => (
-                                <Card 
+                                <TouchableOpacity 
                                     key={conn.id} 
-                                    className="bg-white p-4 rounded-3xl shadow-sm border border-[#E0F2F1] active:bg-slate-50 relative overflow-hidden"
                                     onPress={() => handleConnect(conn.uri, conn.name)}
+                                    activeOpacity={0.7}
                                 >
-                                    <HStack className="items-center justify-between">
-                                        <HStack className="items-center flex-1" space="md">
-                                            <Box className="bg-[#F3E5F5] p-3 rounded-2xl">
-                                                <Zap size={22} color="#9C27B0" />
-                                            </Box>
-                                            <VStack className="flex-1">
-                                                <Text className="text-[#004D40] font-bold text-base font-['InclusiveSans']" numberOfLines={1}>
-                                                    {conn.name}
-                                                </Text>
-                                                <Text className="text-slate-400 text-[10px] font-medium font-['InclusiveSans']" numberOfLines={1}>
-                                                    {conn.uri.split('@').pop()}
-                                                </Text>
-                                            </VStack>
+                                    <Card className="bg-white p-4 rounded-3xl shadow-sm border border-[#E0F2F1] relative overflow-hidden">
+                                        <HStack className="items-center justify-between">
+                                            <HStack className="items-center flex-1" space="md">
+                                                <Box className="bg-[#F3E5F5] p-3 rounded-2xl">
+                                                    <Zap size={22} color="#9C27B0" />
+                                                </Box>
+                                                <VStack className="flex-1">
+                                                    <Text className="text-[#004D40] font-bold text-base font-['InclusiveSans']" numberOfLines={1}>
+                                                        {conn.name}
+                                                    </Text>
+                                                    <Text className="text-slate-400 text-[10px] font-medium font-['InclusiveSans']" numberOfLines={1}>
+                                                        {conn.uri.split('@').pop()}
+                                                    </Text>
+                                                </VStack>
+                                            </HStack>
+                                            
+                                            <HStack space="xs" className="items-center">
+                                                <TouchableOpacity 
+                                                    onPress={(e) => {
+                                                        e.stopPropagation();
+                                                        removeConnection(conn.id);
+                                                    }}
+                                                    className="p-2"
+                                                >
+                                                    <Trash2 size={16} color="#F43F5E" />
+                                                </TouchableOpacity>
+                                                <Box className="bg-[#00796B] p-1.5 rounded-full">
+                                                    <ChevronRight size={14} color="white" />
+                                                </Box>
+                                            </HStack>
                                         </HStack>
-                                        
-                                        <HStack space="xs" className="items-center">
-                                            <Button 
-                                                variant="link" 
-                                                className="p-2 h-auto w-auto"
-                                                onPress={() => removeConnection(conn.id)}
-                                            >
-                                                <Trash2 size={16} color="#F43F5E" />
-                                            </Button>
-                                            <Box className="bg-[#00796B] p-1.5 rounded-full">
-                                                <ChevronRight size={14} color="white" />
-                                            </Box>
-                                        </HStack>
-                                    </HStack>
-                                </Card>
+                                    </Card>
+                                </TouchableOpacity>
                             ))}
                         </VStack>
                     )}
