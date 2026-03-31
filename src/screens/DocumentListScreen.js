@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useMemo } from 'react';
-import { FlatList, Alert, SafeAreaView, TextInput, ScrollView, View, TouchableOpacity, Dimensions } from 'react-native';
+import { FlatList, Alert, TextInput, ScrollView, View, TouchableOpacity, Dimensions } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import { useConnectionStore } from '../store/useConnectionStore';
 import { fetchDocuments, insertDocument, updateDocument, deleteDocument } from '../services/api';
@@ -45,7 +46,6 @@ export default function DocumentListScreen() {
     const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [loading, setLoading] = useState(true);
-    const [viewType, setViewType] = useState('json');
 
     const [modalVisible, setModalVisible] = useState(false);
     const [selectedDoc, setSelectedDoc] = useState(null);
@@ -164,88 +164,14 @@ export default function DocumentListScreen() {
                 </HStack>
             </HStack>
             <Box className="bg-slate-50/50 p-5 rounded-3xl border border-slate-100">
-                <Text className="text-[#334155] font-['InclusiveSans'] text-[11px] leading-6">
+                <Text className="text-[#334155] font-['Montserrat'] text-[11px] leading-6">
                     {JSON.stringify(item, null, 2)}
                 </Text>
             </Box>
         </Card>
     );
 
-    const renderListItem = ({ item }) => (
-        <TouchableOpacity 
-            onPress={() => handleEdit(item)}
-            activeOpacity={0.8}
-        >
-            <Card className="bg-white p-4 rounded-[1.8rem] mb-3 border border-slate-50 shadow-sm">
-                <HStack className="items-center justify-between">
-                    <HStack className="items-center flex-1" space="md">
-                        <Box className="bg-[#FDF2F8] p-3 rounded-2xl">
-                            <Layers size={20} color="#db2777" />
-                        </Box>
-                        <VStack className="flex-1">
-                            <Text className="text-[#1e293b] font-black text-sm font-['InclusiveSans']" numberOfLines={1}>
-                                {item.name || String(item._id)}
-                            </Text>
-                            <Text className="text-slate-400 text-[10px] font-bold uppercase tracking-wider font-['InclusiveSans']" numberOfLines={1}>
-                                Fields: {Object.keys(item).length} • ID: {String(item._id).substring(0, 12)}...
-                            </Text>
-                        </VStack>
-                    </HStack>
-                    <Box className="bg-slate-50 p-2 rounded-full border border-slate-100">
-                        <Eye size={12} color="#1e293b" />
-                    </Box>
-                </HStack>
-            </Card>
-        </TouchableOpacity>
-    );
-
-    const renderTableView = () => (
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mb-4">
-            <VStack className="border border-slate-100 rounded-[2.5rem] overflow-hidden bg-white shadow-sm">
-                <HStack className="bg-[#1e293b] p-4 min-w-[750px] h-14 items-center">
-                    {tableHeaders.map((header, idx) => (
-                        <Box 
-                            key={idx} 
-                            className={`flex-1 px-4 border-r border-slate-700 ${idx === tableHeaders.length - 1 ? 'border-r-0' : ''}`}
-                        >
-                            <Text className="text-white font-black text-[9px] uppercase tracking-[0.1em] font-['InclusiveSans'] text-center">{header}</Text>
-                        </Box>
-                    ))}
-                    <Box className="w-16 h-full items-center justify-center">
-                        <Tag size={14} color="white" />
-                    </Box>
-                </HStack>
-                {docs.map((doc, dIdx) => (
-                    <TouchableOpacity 
-                        key={dIdx} 
-                        onPress={() => handleEdit(doc)}
-                        activeOpacity={0.8}
-                    >
-                        <HStack className={`bg-white border-b border-slate-50 p-4 min-w-[750px] items-center ${dIdx === docs.length - 1 ? 'border-b-0' : ''}`}>
-                            {tableHeaders.map((header, hIdx) => (
-                                <Box 
-                                    key={hIdx} 
-                                    className={`flex-1 px-4 border-r border-slate-50 ${hIdx === tableHeaders.length - 1 ? 'border-r-0' : ''}`}
-                                >
-                                    <Text className="text-[#1e293b] text-xs font-['InclusiveSans'] text-center" numberOfLines={1}>
-                                        {typeof doc[header] === 'object' ? '{...}' : String(doc[header] || '-')}
-                                    </Text>
-                                </Box>
-                            ))}
-                            <TouchableOpacity 
-                                className="w-16 items-center justify-center" 
-                                onPress={() => handleDelete(doc)}
-                            >
-                                <Box className="bg-pink-50 p-2 rounded-xl">
-                                    <Trash2 size={13} color="#f43f5e" />
-                                </Box>
-                            </TouchableOpacity>
-                        </HStack>
-                    </TouchableOpacity>
-                ))}
-            </VStack>
-        </ScrollView>
-    );
+    // Standardized to JSON view only. Removed renderListItem and renderTableView.
 
     return (
         <SafeAreaView className="flex-1 bg-[#FAF9F6]">
@@ -272,63 +198,31 @@ export default function DocumentListScreen() {
                     </TouchableOpacity>
                 </HStack>
 
-                {/* View Switcher - Premium Style */}
-                <HStack className="bg-slate-100 p-1.5 rounded-[1.8rem] self-center mt-2" space="xs">
-                    <TouchableOpacity 
-                        onPress={() => setViewType('json')} 
-                        className={`rounded-[1.2rem] px-5 h-10 flex-row items-center ${viewType === 'json' ? 'bg-white shadow-sm' : ''}`}
-                    >
-                        <FileJson size={14} color={viewType === 'json' ? '#1e293b' : '#94a3b8'} />
-                        <Text className={`ml-2 font-black text-[10px] font-['InclusiveSans'] uppercase tracking-wider ${viewType === 'json' ? 'text-[#1e293b]' : 'text-[#94a3b8]'}`}>JSON</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity 
-                        onPress={() => setViewType('list')} 
-                        className={`rounded-[1.2rem] px-5 h-10 flex-row items-center ${viewType === 'list' ? 'bg-white shadow-sm' : ''}`}
-                    >
-                        <List size={14} color={viewType === 'list' ? '#1e293b' : '#94a3b8'} />
-                        <Text className={`ml-2 font-black text-[10px] font-['InclusiveSans'] uppercase tracking-wider ${viewType === 'list' ? 'text-[#1e293b]' : 'text-[#94a3b8]'}`}>LIST</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity 
-                        onPress={() => setViewType('table')} 
-                        className={`rounded-[1.2rem] px-5 h-10 flex-row items-center ${viewType === 'table' ? 'bg-white shadow-sm' : ''}`}
-                    >
-                        <Columns size={14} color={viewType === 'table' ? '#1e293b' : '#94a3b8'} />
-                        <Text className={`ml-2 font-black text-[10px] font-['InclusiveSans'] uppercase tracking-wider ${viewType === 'table' ? 'text-[#1e293b]' : 'text-[#94a3b8]'}`}>TABLE</Text>
-                    </TouchableOpacity>
-                </HStack>
+                {/* Unified JSON Data View */}
             </VStack>
             
             {loading ? (
                 <VStack className="flex-1 justify-center items-center">
                     <Spinner size="large" color="#1e293b" />
-                    <Text className="text-slate-400 font-bold uppercase tracking-widest text-[10px] font-['InclusiveSans'] mt-6">Loading Documents...</Text>
+                    <Text className="text-slate-400 font-bold uppercase tracking-widest text-[10px] font-['Montserrat'] mt-6">Loading Documents...</Text>
                 </VStack>
             ) : (
-                <View className="flex-1 px-7">
-                    {viewType === 'table' ? (
-                        <FlatList
-                            data={[1]}
-                            renderItem={renderTableView}
-                            contentContainerStyle={{ paddingBottom: 150 }}
-                            showsVerticalScrollIndicator={false}
-                        />
-                    ) : (
-                        <FlatList
-                            data={docs}
-                            keyExtractor={(item) => String(item._id || Math.random())}
-                            renderItem={viewType === 'json' ? renderJsonItem : renderListItem}
-                            contentContainerStyle={{ paddingBottom: 150 }}
-                            showsVerticalScrollIndicator={false}
-                            ListEmptyComponent={
-                                <VStack className="items-center mt-20" space="md">
-                                    <Box className="bg-white p-6 rounded-full border border-dashed border-slate-200">
-                                        <FileJson size={48} color="#cbd5e1" />
-                                    </Box>
-                                    <Text className="text-slate-400 text-sm font-medium font-['InclusiveSans'] text-center">No documents found.</Text>
-                                </VStack>
-                            }
-                        />
-                    )}
+                <View className="flex-1 px-7 mt-4">
+                    <FlatList
+                        data={docs}
+                        keyExtractor={(item) => String(item._id || Math.random())}
+                        renderItem={renderJsonItem}
+                        contentContainerStyle={{ paddingBottom: 150 }}
+                        showsVerticalScrollIndicator={false}
+                        ListEmptyComponent={
+                            <VStack className="items-center mt-20" space="md">
+                                <Box className="bg-white p-6 rounded-full border border-dashed border-slate-200">
+                                    <FileJson size={48} color="#cbd5e1" />
+                                </Box>
+                                <Text className="text-slate-400 text-sm font-medium font-['Montserrat'] text-center">No documents found.</Text>
+                            </VStack>
+                        }
+                    />
                 </View>
             )}
 
@@ -342,7 +236,7 @@ export default function DocumentListScreen() {
                         <ArrowLeft size={18} color="white" />
                     </TouchableOpacity>
                     <VStack className="items-center">
-                        <Text className="text-white font-black tracking-[0.2em] text-[10px] font-['InclusiveSans'] uppercase">PAGE {page} OF {Math.max(1, totalPages)}</Text>
+                        <Text className="text-white font-black tracking-[0.2em] text-[10px] font-['Montserrat'] uppercase">PAGE {page} OF {Math.max(1, totalPages)}</Text>
                     </VStack>
                     <TouchableOpacity 
                         onPress={() => setPage(Math.min(totalPages, page + 1))} 
@@ -373,7 +267,7 @@ export default function DocumentListScreen() {
                             <VStack space="md" className="flex-1">
                                 <ScrollView className="flex-1">
                                     <TextInput
-                                        className="text-[#1e293b] font-['InclusiveSans'] text-sm leading-8"
+                                        className="text-[#1e293b] font-['Montserrat'] text-sm leading-8"
                                         multiline
                                         textAlignVertical="top"
                                         value={jsonInput}
@@ -395,7 +289,7 @@ export default function DocumentListScreen() {
                             {isSaving ? <Spinner color="white" /> : (
                                 <HStack space="sm" className="items-center">
                                     <Check size={20} color="white" />
-                                    <ButtonText className="font-extrabold text-xl font-['InclusiveSans']">Save Document</ButtonText>
+                                    <ButtonText className="font-extrabold text-xl font-['Montserrat']">Save Document</ButtonText>
                                 </HStack>
                             )}
                         </Button>

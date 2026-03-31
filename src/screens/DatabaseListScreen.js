@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { FlatList, Alert, SafeAreaView, TouchableOpacity } from 'react-native';
+import { FlatList, Alert, TouchableOpacity } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { useConnectionStore } from '../store/useConnectionStore';
 import { fetchDatabases } from '../services/api';

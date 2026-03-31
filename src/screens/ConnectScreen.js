@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { ScrollView, Alert, SafeAreaView, Dimensions, TouchableOpacity, TextInput } from 'react-native';
+import { ScrollView, Alert, Dimensions, TouchableOpacity, TextInput } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { useConnectionStore } from '../store/useConnectionStore';
 import { connectDb } from '../services/api';
@@ -131,7 +132,6 @@ export default function ConnectScreen() {
                                         value={uri}
                                         onChangeText={setUri}
                                         autoCapitalize="none"
-                                        secureTextEntry
                                         autoCorrect={false}
                                     />
                                 </Box>

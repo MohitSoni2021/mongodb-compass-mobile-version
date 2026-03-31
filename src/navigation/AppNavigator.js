@@ -1,5 +1,4 @@
 import React from 'react';
-import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import ConnectScreen from '../screens/ConnectScreen';
@@ -11,7 +10,6 @@ const Stack = createNativeStackNavigator();
 
 export default function AppNavigator() {
   return (
-    <NavigationContainer>
       <Stack.Navigator 
         initialRouteName="Connect"
         screenOptions={{
@@ -21,7 +19,7 @@ export default function AppNavigator() {
             fontWeight: '900', 
             fontSize: 16,
             color: '#1e293b',
-            fontFamily: 'InclusiveSans'
+            fontFamily: 'MontserratBlack'
           },
           headerShadowVisible: false,
         }}
@@ -31,6 +29,5 @@ export default function AppNavigator() {
         <Stack.Screen name="Collections" component={CollectionListScreen} options={{ headerShown: false }} />
         <Stack.Screen name="Documents" component={DocumentListScreen} options={{ headerShown: false }} />
       </Stack.Navigator>
-    </NavigationContainer>
   );
 }

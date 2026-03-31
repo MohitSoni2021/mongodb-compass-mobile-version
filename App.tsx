@@ -1,16 +1,15 @@
 import React from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, View } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import AppNavigator from './src/navigation/AppNavigator';
 
 import { GluestackUIProvider } from '@/components/ui/gluestack-ui-provider';
 import '@/global.css';
 
 // Font Loading
-import { 
-    useFonts, 
-    InclusiveSans_400Regular 
-} from '@expo-google-fonts/inclusive-sans';
+import { useFonts } from 'expo-font';
 import {
     Montserrat_400Regular,
     Montserrat_700Bold,
@@ -22,7 +21,6 @@ SplashScreen.preventAutoHideAsync();
 
 export default function App() {
     const [fontsLoaded] = useFonts({
-        InclusiveSans: InclusiveSans_400Regular,
         Montserrat: Montserrat_400Regular,
         MontserratBold: Montserrat_700Bold,
         MontserratBlack: Montserrat_900Black,
@@ -39,12 +37,16 @@ export default function App() {
     }
 
     return (
-        <GluestackUIProvider mode="light">
-            <View style={styles.container}>
-                <AppNavigator />
-                <StatusBar style="dark" />
-            </View>
-        </GluestackUIProvider>
+        <SafeAreaProvider>
+            <GluestackUIProvider mode="light">
+                <View style={styles.container}>
+                    <NavigationContainer>
+                        <AppNavigator />
+                    </NavigationContainer>
+                    <StatusBar style="dark" />
+                </View>
+            </GluestackUIProvider>
+        </SafeAreaProvider>
     );
 }
 
