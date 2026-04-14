@@ -3,7 +3,7 @@ import axios from 'axios';
 // Fallback to localhost if EXPO_PUBLIC_API_URL is missing. 
 // Note: 10.0.2.2 is only for Android Emulators. 
 // For production/physical devices, you MUST provide the server IP in .env
-const API_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3000/api';
+const API_URL = "https://mongodb-compass-mobile-version-backend.onrender.com/api" || 'http://localhost:3000/api';
 
 const apiClient = axios.create({
     baseURL: API_URL,

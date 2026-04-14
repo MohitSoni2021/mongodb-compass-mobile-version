@@ -15,6 +15,7 @@ import {
     Montserrat_700Bold,
     Montserrat_900Black
 } from '@expo-google-fonts/montserrat';
+import { InclusiveSans_400Regular } from '@expo-google-fonts/inclusive-sans';
 import * as SplashScreen from 'expo-splash-screen';
 
 SplashScreen.preventAutoHideAsync();
@@ -24,6 +25,7 @@ export default function App() {
         Montserrat: Montserrat_400Regular,
         MontserratBold: Montserrat_700Bold,
         MontserratBlack: Montserrat_900Black,
+        InclusiveSans: InclusiveSans_400Regular,
     });
 
     React.useEffect(() => {
